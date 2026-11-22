@@ -82,6 +82,11 @@ export default function CustomSpiderCursor() {
       svgRef.current?.classList.add("spider-cursor--out");
     };
 
+    const handleEnvironmentCursor = (event: Event) => {
+      const { variant } = (event as CustomEvent<{ variant?: string }>).detail ?? {};
+      spiderRef.current?.setAttribute("data-variant", variant ?? "");
+    };
+
     const handlePointerDown = (event: PointerEvent) => {
       const element =
         event.target instanceof Element ? event.target : null;
@@ -140,6 +145,7 @@ export default function CustomSpiderCursor() {
     window.addEventListener("pointerover", handlePointerOver, { passive: true });
     window.addEventListener("pointerdown", handlePointerDown, { passive: true });
     window.addEventListener("pointerleave", handlePointerLeave);
+    window.addEventListener("spider:cursor", handleEnvironmentCursor);
     pointerQuery.addEventListener("change", updatePointerMode);
     motionQuery.addEventListener("change", updatePointerMode);
     updatePointerMode();
@@ -153,6 +159,7 @@ export default function CustomSpiderCursor() {
       window.removeEventListener("pointerover", handlePointerOver);
       window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointerleave", handlePointerLeave);
+      window.removeEventListener("spider:cursor", handleEnvironmentCursor);
       pointerQuery.removeEventListener("change", updatePointerMode);
       motionQuery.removeEventListener("change", updatePointerMode);
     };

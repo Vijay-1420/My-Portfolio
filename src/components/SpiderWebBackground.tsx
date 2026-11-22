@@ -138,7 +138,10 @@ export default function SpiderWebBackground() {
     const drawingContext: CanvasRenderingContext2D = context;
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    reducedMotionRef.current = motionQuery.matches;
+    const compactQuery = window.matchMedia(
+      "(max-width: 760px), (pointer: coarse)"
+    );
+    reducedMotionRef.current = motionQuery.matches || compactQuery.matches;
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, MAX_DPR);
@@ -156,6 +159,7 @@ export default function SpiderWebBackground() {
     };
 
     const handlePointerMove = (event: PointerEvent) => {
+      if (event.pointerType !== "mouse" && event.pointerType !== "pen") return;
       pointerRef.current = { x: event.clientX, y: event.clientY };
     };
 
@@ -183,10 +187,10 @@ export default function SpiderWebBackground() {
       scrollRef.current = window.scrollY;
     };
 
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      reducedMotionRef.current = event.matches;
+    const handleMotionChange = () => {
+      reducedMotionRef.current = motionQuery.matches || compactQuery.matches;
       cancelAnimationFrame(animationRef.current);
-      if (event.matches) {
+      if (reducedMotionRef.current) {
         render(0);
       } else {
         animationRef.current = requestAnimationFrame(animate);
@@ -408,6 +412,7 @@ export default function SpiderWebBackground() {
     window.addEventListener("blur", handlePointerLeave);
     document.addEventListener("visibilitychange", handleVisibility);
     motionQuery.addEventListener("change", handleMotionChange);
+    compactQuery.addEventListener("change", handleMotionChange);
 
     return () => {
       cancelAnimationFrame(animationRef.current);
@@ -420,6 +425,7 @@ export default function SpiderWebBackground() {
       window.removeEventListener("blur", handlePointerLeave);
       document.removeEventListener("visibilitychange", handleVisibility);
       motionQuery.removeEventListener("change", handleMotionChange);
+      compactQuery.removeEventListener("change", handleMotionChange);
     };
   }, []);
 

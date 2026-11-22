@@ -10,6 +10,7 @@ import JourneySection from "@/components/JourneySection";
 import ContactSection from "@/components/ContactSection";
 import SiteFooter from "@/components/SiteFooter";
 import WebTransition from "@/components/WebTransition";
+import CinematicEnvironment from "@/components/CinematicEnvironment";
 
 export default function Home() {
   return (
@@ -17,6 +18,7 @@ export default function Home() {
       <CinematicIntro />
       <CustomSpiderCursor />
       <WebTransition />
+      <CinematicEnvironment />
       <SpiderWebBackground />
       <Navbar />
       <main className="relative z-10">

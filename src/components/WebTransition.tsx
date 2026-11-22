@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 
 interface TransitionDetail {
   type?: "section" | "portal";
+  variant?: "expansion" | "pull" | "shatter" | "spider" | "energy" | "portal";
   x?: number;
   y?: number;
 }
@@ -21,14 +22,19 @@ export default function WebTransition() {
       const y = detail.y ?? window.innerHeight / 2;
       layer.style.setProperty("--transition-x", `${x}px`);
       layer.style.setProperty("--transition-y", `${y}px`);
-      layer.dataset.variant = detail.type ?? "section";
+      layer.dataset.variant =
+        detail.variant ?? (detail.type === "portal" ? "portal" : "expansion");
       layer.classList.remove("web-transition--active");
       void layer.offsetWidth;
       layer.classList.add("web-transition--active");
       window.clearTimeout(timeoutRef.current);
       timeoutRef.current = window.setTimeout(
         () => layer.classList.remove("web-transition--active"),
-        detail.type === "portal" ? 740 : 660
+        detail.type === "portal" || detail.variant === "energy"
+          ? 760
+          : detail.variant === "shatter"
+            ? 620
+            : 700
       );
     };
 
@@ -68,7 +74,20 @@ export default function WebTransition() {
         (link.getAttribute("href") ?? "").slice(1)
       );
       if (!section) return;
-      activate({ type: "section", x: event.clientX, y: event.clientY });
+      const variants: Record<string, TransitionDetail["variant"]> = {
+        home: "spider",
+        about: "pull",
+        skills: "expansion",
+        projects: "energy",
+        journey: "shatter",
+        contact: "spider",
+      };
+      activate({
+        type: "section",
+        variant: variants[section.id] ?? "expansion",
+        x: event.clientX,
+        y: event.clientY,
+      });
     };
 
     const handleTransition = (event: Event) => {
@@ -99,6 +118,12 @@ export default function WebTransition() {
           <circle cx="500" cy="500" r="380" />
           <circle cx="500" cy="500" r="475" />
           <path d="M500 500V0M500 500 750 67M500 500 933 250M500 500h500M500 500l433 250M500 500l250 433M500 500v500M500 500 250 933M500 500 67 750M500 500H0M500 500 67 250M500 500 250 67" />
+        </g>
+        <g className="transition-spider" transform="translate(500 115)">
+          <path className="transition-spider-thread" d="M0-115V-16" />
+          <path d="M-3-7-11-14-17-23M3-7 11-14 17-23M-4-3-16-5-21-12M4-3 16-5 21-12M-4 3-12 10-17 19M4 3 12 10 17 19M-2 5-6 15-6 23M2 5 6 15 6 23" />
+          <ellipse cy="0" rx="4" ry="5" />
+          <circle cy="-7" r="3" />
         </g>
       </svg>
     </div>
